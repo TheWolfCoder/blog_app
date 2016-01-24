@@ -17,18 +17,28 @@ before_filter :set_article, only: [:show, :edit, :update, :destroy]
   end
   
   def edit
+    if @article.user != current_user
+      flash[:danger] = "You can only edit your own article."
+      redirect_to root_path
+    end
   end  
   
   def update
-    
-    if @article.update(article_params)
+    if @article.user != current_user
+      flash[:danger] = "You can only edit your own article."
+      redirect_to root_path
+    else
+  
+      if @article.update(article_params)
       flash[:success] = "Article has been updated"
       redirect_to @article
-    else
+      else
       flash.now[:danger] = "Article has not been updated"
       render :edit
-    end  
-  end  
+      end  
+    end 
+end  
+  
     
   def new
     @article = Article.new
